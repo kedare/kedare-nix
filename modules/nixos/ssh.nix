@@ -7,6 +7,6 @@
       permitRootLogin = "no";
       passwordAuthentication = false;
       X11Forwarding = false;
-    }
+    };
   };
 }
