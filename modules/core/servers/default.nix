@@ -2,6 +2,6 @@
 
 {
   imports = [
-    ../global/defaults.nix
+    ../global/default.nix
   ];
 }
