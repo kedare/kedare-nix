@@ -17,6 +17,7 @@
     git
     vim
     sysstat
+    kopia
   ];
 
   programs.neovim = {
