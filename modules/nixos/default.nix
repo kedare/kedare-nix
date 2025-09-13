@@ -9,5 +9,7 @@
     ./users.nix
     ./tools.nix
     ./shell.nix
+    ./monitoring.nix
+    ./security.nix
   ];
 }
