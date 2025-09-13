@@ -16,7 +16,7 @@
       let
         authorizedKeys = pkgs.fetchurl {
           url = "https://codeberg.org/kedare.keys";
-          sha256 = "sha256-Rq3Ln0+4ss+oRc9bLnAM027OmXRYlH6KfYycHrlY/es=";
+          sha256 = "sha256-4Y8H2fgNFEJXGKdWjJq5O9AcFoUxjJnWIh6xdqMfo4s=";
         };
       in
       pkgs.lib.splitString "\n" (builtins.readFile authorizedKeys);
