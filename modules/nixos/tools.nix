@@ -16,6 +16,7 @@
     htop
     git
     vim
+    sysstat
   ];
 
   programs.neovim = {
