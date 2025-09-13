@@ -10,7 +10,7 @@
       "wheel"
       "networkmanager"
     ];
-    shell = "/usr/bin/zsh";
+    shell = pkgs.zsh;
 
     openssh.authorizedKeys.keys =
       let
