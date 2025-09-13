@@ -3,7 +3,8 @@
 {
   imports = [
     ./hardware.nix
-    ../../modules/nixos/default.nix
+    ../../modules/servers/default.nix
+    ../../modules/devenv/default.nix
   ];
 
   networking.hostName = "esbcn1-lab-nixos1";

@@ -18,6 +18,7 @@
     vim
     sysstat
     kopia
+    nixd
   ];
 
   programs.neovim = {
