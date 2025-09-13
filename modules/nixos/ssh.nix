@@ -3,8 +3,10 @@
 {
   services.openssh = {
     enable = true;
-    permitRootLogin = "no";
-    passwordAuthentication = false;
-    X11Forwarding = false;
+    settings = {
+      permitRootLogin = "no";
+      passwordAuthentication = false;
+      X11Forwarding = false;
+    }
   };
 }
