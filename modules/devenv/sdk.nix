@@ -14,6 +14,6 @@
     ruby_3_4
     zulu24
     perl
-  ]
+  ];
 
 }
