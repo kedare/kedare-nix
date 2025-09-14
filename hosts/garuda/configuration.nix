@@ -5,6 +5,7 @@
     ./hardware.nix
     ../../modules/core/desktop/default.nix
     ../../modules/devenv/default.nix
+    ../../modules/gaming/default.nix
   ];
 
   networking.hostName = "garuda";

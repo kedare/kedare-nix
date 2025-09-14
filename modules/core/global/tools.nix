@@ -42,4 +42,6 @@
     enable = true;
     enableSSHSupport = true;
   };
+
+  services.fwupd.enable = true;
 }
