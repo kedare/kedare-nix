@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     google-chrome
+    vscode
   ];
 
   programs._1password.enable = true;
