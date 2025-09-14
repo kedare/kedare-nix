@@ -22,6 +22,7 @@
     nixfmt-rfc-style
     direnv
     tokei
+    lm_sensors
   ];
 
   programs.neovim = {
