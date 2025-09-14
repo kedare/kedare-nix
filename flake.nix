@@ -28,6 +28,12 @@
             nixos-hardware.nixosModules.framework-13-7040-amd
           ];
         };
+        bahamut = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/bahamut/configuration.nix
+          ];
+        };
       };
     };
 }
