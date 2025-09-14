@@ -17,7 +17,8 @@
     };
   };
 
-  environment.systemPackages = [
-    pkgs.gnomeExtensions.forge
+  environment.systemPackages = with pkgs; [
+    gnome-tweaks
+    gnomeExtensions.forge
   ];
 }
