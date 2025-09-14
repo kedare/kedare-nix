@@ -32,7 +32,7 @@
       enable32Bit = true;
     };
     nvidia = {
-      open = true;
+      open = false;
     };
   };
 
