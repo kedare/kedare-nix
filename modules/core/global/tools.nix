@@ -20,6 +20,8 @@
     kopia
     nixd
     nixfmt-rfc-style
+    direnv
+    tokei
   ];
 
   programs.neovim = {
