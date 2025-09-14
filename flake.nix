@@ -25,7 +25,7 @@
           system = "x86_64-linux";
           modules = [
             ./hosts/garuda/configuration.nix
-            nixos-hardware.nixosModules.dell-xps-13-9380
+            nixos-hardware.nixosModules.framework-13-7040-amd
           ];
         };
       };
