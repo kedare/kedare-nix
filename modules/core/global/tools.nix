@@ -35,4 +35,10 @@
       hide_userlands_threads = false;
     };
   };
+
+  programs.mtr.enable = true;
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
 }

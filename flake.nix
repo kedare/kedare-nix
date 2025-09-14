@@ -13,6 +13,12 @@
           ./hosts/esbcn1-lab-nixos1/configuration.nix
         ];
       };
+      garuda = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          ./hosts/garuda/configuration.nix
+        ];
+      };
     };
   };
 }
