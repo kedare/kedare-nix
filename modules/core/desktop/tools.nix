@@ -5,6 +5,8 @@
     google-chrome
     wezterm
     vscode
+    ffmpeg-full
+    vlc
   ];
 
   fonts = {
