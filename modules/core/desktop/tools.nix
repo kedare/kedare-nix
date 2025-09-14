@@ -17,7 +17,7 @@
     ];
     fontconfig = {
       defaultFonts = {
-        monospace = [ "0xProto Nerd Font"];
+        monospace = [ "0xProto Nerd Font" ];
         sansSerif = [ "Fira Sans" ];
         serif = [ "DejaVu Serif" ];
       };
