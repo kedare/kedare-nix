@@ -16,4 +16,8 @@
       '';
     };
   };
+
+  environment.systemPackages = [
+    pkgs.gnomeExtensions.forge
+  ];
 }
