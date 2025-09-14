@@ -23,6 +23,7 @@
     direnv
     tokei
     lm_sensors
+    go-task
   ];
 
   programs.neovim = {

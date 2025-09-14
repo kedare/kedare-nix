@@ -1,0 +1,13 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  build:
+   desc: Build the NixOS configuration for the current host
+   cmds:
+      - nixos-rebuild build --flake .#${HOSTNAME} --show-trace
+  switch:
+    desc: Switch to the NixOS configuration for the current host
+    cmds:
+      - nixos-rebuild switch --flake .#${HOSTNAME} --show-trace
