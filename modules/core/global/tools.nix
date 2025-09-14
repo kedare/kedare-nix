@@ -19,6 +19,7 @@
     sysstat
     kopia
     nixd
+    nixfmt-rfc-style
   ];
 
   programs.neovim = {
