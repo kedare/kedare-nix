@@ -3,7 +3,7 @@
 {
   imports = [
     ./hardware.nix
-    ../../modules/core/servers/default.nix
+    ../../modules/core/server/default.nix
     ../../modules/devenv/default.nix
   ];
 
