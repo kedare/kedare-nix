@@ -10,4 +10,4 @@ tasks:
   switch:
     desc: Switch to the NixOS configuration for the current host
     cmds:
-      - nixos-rebuild switch --flake .#${HOSTNAME} --show-trace
+      - sudo nixos-rebuild switch --flake .#${HOSTNAME} --show-trace

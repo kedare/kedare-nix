@@ -7,6 +7,7 @@
     vscode
     ffmpeg-full
     vlc
+    yt-dlp
   ];
 
   fonts = {
