@@ -24,6 +24,7 @@
     tokei
     lm_sensors
     go-task
+    lunarvim
   ];
 
   programs.neovim = {
