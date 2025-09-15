@@ -7,8 +7,8 @@ nixfmt **/**.nix
 # Build for local system
 task build
 
-# Deploy on local system
-task deploy
+# Switch to latest config on local system
+task switch
 
 # Low level usage: Here on garuda for example (only needed if task is not available, during bootstrap, etc..)
 nixos-rebuild build --flake .#garuda
