@@ -8,6 +8,14 @@
     ffmpeg-full
     vlc
     yt-dlp
+    aspell
+    aspellDicts.en
+    aspellDicts.fr
+    aspellDicts.es
+    hunspell
+    hunspellDicts.en-us-large
+    hunspellDicts.fr-moderne
+    hunspellDicts.es-es
   ];
 
   fonts = {
