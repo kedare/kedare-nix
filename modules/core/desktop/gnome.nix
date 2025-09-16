@@ -21,5 +21,6 @@
     gnome-tweaks
     gnomeExtensions.forge
     gnomeExtensions.tray-icons-reloaded
+    gnomeExtensions.tailscale-status
   ];
 }
