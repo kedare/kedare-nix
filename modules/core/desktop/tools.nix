@@ -9,6 +9,7 @@
     ffmpeg-full
     vlc
     yt-dlp
+    calibre
     aspell
     aspellDicts.en
     aspellDicts.fr
