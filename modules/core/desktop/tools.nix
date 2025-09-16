@@ -2,6 +2,7 @@
 
 {
   environment.systemPackages = with pkgs; [
+    trayscale
     google-chrome
     wezterm
     vscode
