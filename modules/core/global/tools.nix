@@ -49,6 +49,7 @@
     sysstat
     pciutils
     usbutils
+    tcpdump
 
     # Backup
     kopia
