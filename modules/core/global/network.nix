@@ -1,5 +1,7 @@
 { ... }:
 {
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall = {
+    allowPing = true;
+  };
   services.tailscale.enable = true;
 }

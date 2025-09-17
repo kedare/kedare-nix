@@ -4,8 +4,13 @@
 }:
 
 {
+  users.groups.kedare = {
+    gid = 1000;
+  };
   users.users.kedare = {
+    uid = 1000;
     isNormalUser = true;
+    group = "kedare";
     extraGroups = [
       "wheel"
       "networkmanager"

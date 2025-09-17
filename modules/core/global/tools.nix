@@ -22,7 +22,7 @@
     gawk
     gnupg
     tokei
-    
+
     # Nix related tools
     nil
     nixd

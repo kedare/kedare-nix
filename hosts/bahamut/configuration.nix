@@ -8,6 +8,9 @@
     ../../modules/gaming/default.nix
   ];
 
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
   networking.hostName = "bahamut";
   time.timeZone = "Europe/Madrid";
 
