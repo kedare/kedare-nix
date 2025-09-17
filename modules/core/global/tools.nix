@@ -5,24 +5,64 @@
 
 {
   environment.systemPackages = with pkgs; [
-    wget
-    curl
-    nil
-    btop
-    ncdu
+
+    # CLI utilities
     bat
     fd
     ripgrep
-    htop
-    git
-    vim
-    sysstat
-    kopia
+    neofetch
+    jq
+    yq-go
+    eza
+    fzf
+    file
+    which
+    tree
+    gnutar
+    gawk
+    gnupg
+    tokei
+    
+    # Nix related tools
+    nil
     nixd
     nixfmt-rfc-style
     direnv
-    tokei
+
+    # HTTP clients
+    wget
+    curl
+    httpie
+
+    # Monitoring
+    htop
+    btop
+    iotop
+    iftop
+    ncdu
+    sysstat
     lm_sensors
+    dnsutils
+    strace
+    lsof
+    ltrace
+    sysstat
+    pciutils
+    usbutils
+
+    # Backup
+    kopia
+
+    # Archiving
+    zip
+    xz
+    unzip
+    p7zip
+    zstd
+
+    # Basic development tools
+    git
+    vim
     go-task
     lunarvim
   ];
