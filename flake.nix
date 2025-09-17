@@ -28,6 +28,12 @@
             nixos-hardware.nixosModules.framework-13-7040-amd
           ];
         };
+        carbuncle = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/carbuncle/configuration.nix
+          ];
+        };
         bahamut = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
