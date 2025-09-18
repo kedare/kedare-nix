@@ -17,6 +17,7 @@
     hunspellDicts.en-us-large
     hunspellDicts.fr-moderne
     hunspellDicts.es-es
+    wireshark
   ];
 
   fonts = {
