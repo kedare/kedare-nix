@@ -15,10 +15,10 @@
     }:
     {
       nixosConfigurations = {
-        esbcn1-lab-nixos1 = nixpkgs.lib.nixosSystem {
+        esbcn1-nix-cache1 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
-            ./hosts/esbcn1-lab-nixos1/configuration.nix
+            ./hosts/esbcn1-nix-cache1/configuration.nix
           ];
         };
         esbcn1-nas1 = nixpkgs.lib.nixosSystem {

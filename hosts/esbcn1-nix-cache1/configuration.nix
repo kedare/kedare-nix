@@ -1,0 +1,95 @@
+{ config, pkgs, ... }:
+
+{
+  imports = [
+    ./hardware.nix
+    ../../modules/core/server/default.nix
+    ../../modules/devenv/default.nix
+  ];
+
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  networking.hostName = "esbcn1-nix-cache1";
+  time.timeZone = "Europe/Madrid";
+
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
+
+  #services.nix-serve = {
+  #  enable = true;
+  #  package = pkgs.nix-serve-ng;
+  #  secretKeyFile = "/var/nix/cache/cache-priv-key.pem";
+  #};
+
+  #services.caddy = {
+  #  enable = true;
+  #  virtualHosts = {
+  #    "cache.nix.keda.re" = {
+  #      extraConfig = ''
+  #        reverse_proxy http://${config.services.nix-serve.bindAddress}:${toString config.services.nix-serve.port}
+  #      '';
+  #    };
+  #  };
+  #};
+
+  services.nginx = {
+    enable = true;
+    appendHttpConfig = ''
+      proxy_cache_path /var/cache/nginx/nix levels=1:2 keys_zone=nix:100m max_size=20g inactive=365d use_temp_path=off;
+
+      # Cache only success status codes; in particular we don't want to cache 404s.
+      # See https://serverfault.com/a/690258/128321
+      map $status $cache_header {
+        200     "public";
+        302     "public";
+        default "no-cache";
+      }
+      access_log /var/log/nginx/access.log;
+    '';
+
+    virtualHosts."cache.nix.keda.re" = {
+      locations."/" = {
+        proxyPass = "$upstream_endpoint";
+        extraConfig = ''
+          proxy_cache nix;
+          proxy_cache_valid  200 302  60d;
+          expires max;
+          add_header Cache-Control $cache_header always;
+          proxy_ssl_server_name on;
+        '';
+      };
+
+      extraConfig = ''
+        # Using a variable for the upstream endpoint to ensure that it is
+        # resolved at runtime as opposed to once when the config file is loaded
+        # and then cached forever (we don't want that):
+        # see https://tenzer.dk/nginx-with-dynamic-upstreams/
+        # This fixes errors like
+        #   nginx: [emerg] host not found in upstream "upstream.example.com"
+        # when the upstream host is not reachable for a short time when
+        # nginx is started.
+        resolver 8.8.8.8;
+        set $upstream_endpoint https://cache.nixos.org;
+      '';
+
+      # We always want to copy cache.nixos.org's nix-cache-info file,
+      # and ignore our own, because `nix-push` by default generates one
+      # without `Priority` field, and thus that file by default has priority
+      # 50 (compared to cache.nixos.org's `Priority: 40`), which will make
+      # download clients prefer `cache.nixos.org` over our binary cache.
+      locations."= /nix-cache-info" = {
+        # Note: This is duplicated with the `@fallback` above,
+        # would be nicer if we could redirect to the @fallback instead.
+        proxyPass = "$upstream_endpoint";
+        extraConfig = ''
+          proxy_cache nix;
+          proxy_cache_valid  200 302  60d;
+          expires max;
+          add_header Cache-Control $cache_header always;
+        '';
+      };
+    };
+  };
+}
