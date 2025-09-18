@@ -5,7 +5,9 @@
     ../global/default.nix
   ];
 
-  networking.networkmanager.connectionConfig = {
-    "ipv6.addr-gen-mode" = "euid64";
-  };
+  #networking.networkmanager.connectionConfig = {
+  #  "ipv6.ip6-privacy" = "0";
+  #};
+
+  networking.tempAddresses = "disabled";
 }
