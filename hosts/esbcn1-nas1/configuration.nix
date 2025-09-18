@@ -107,7 +107,7 @@
   systemd.services."kopia-backup" = {
     script = ''
       set -eu
-      ${pkgs.kopia}/kopia snapshot create /mnt/dpool
+      ${pkgs.kopia}/bin/kopia snapshot create /mnt/dpool
     '';
     serviceConfig = {
       Type = "oneshot";
