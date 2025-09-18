@@ -95,4 +95,23 @@
       20048
     ];
   };
+
+  systemd.timers."kopia-backup" = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnUnitActiveSec = "1d";
+      Unit = "kopia-backup.service";
+    };
+  };
+
+  systemd.services."kopia-backup" = {
+    script = ''
+      set -eu
+      ${pkgs.kopia}/kopia snapshot create /mnt/dpool
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+    };
+  };
 }
