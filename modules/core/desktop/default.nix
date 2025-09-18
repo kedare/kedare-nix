@@ -10,4 +10,7 @@
     ./fingerprint.nix
     ./tools.nix
   ];
+
+  # Desktops/laptops use Network Manager
+  networking.networkmanager.enable = true;
 }

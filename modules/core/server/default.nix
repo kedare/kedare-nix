@@ -5,9 +5,7 @@
     ../global/default.nix
   ];
 
-  #networking.networkmanager.connectionConfig = {
-  #  "ipv6.ip6-privacy" = "0";
-  #};
-
+  # Servers are using systemd-network
+  systemd.network.enable = true;
   networking.tempAddresses = "disabled";
 }
