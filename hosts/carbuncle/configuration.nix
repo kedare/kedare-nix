@@ -19,6 +19,11 @@
     };
   };
 
+  # fix https://discussion.fedoraproject.org/t/certain-apps-not-showing-correctly-after-last-update/155193/20
+  environment.variables = {
+    GSK_RENDERER = "cairo";
+  };
+
   hardware = {
     graphics = {
       enable = true;
