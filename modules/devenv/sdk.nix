@@ -20,6 +20,7 @@
     postgresql
     postgresql.pg_config
     libpq
+    terraform
   ];
 
 }
