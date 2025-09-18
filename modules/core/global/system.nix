@@ -2,12 +2,20 @@
 
 {
   system.stateVersion = "25.05";
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nix.optimise.automatic = true;
-  nix.binaryCaches = [ "http://cache.nix.keda.re" ];
+  nix = {
+    optimise = {
+      automatic = true;
+    };
+    settings = {
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      substituters = [
+        "http://cache.nix.keda.re"
+      ];
+    };
+  };
   programs.nix-ld.enable = true;
   nixpkgs.config.allowUnfree = true;
   i18n.defaultLocale = "en_US.UTF-8";
