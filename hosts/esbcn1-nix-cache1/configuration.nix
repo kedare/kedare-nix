@@ -46,7 +46,10 @@
         302     "public";
         default "no-cache";
       }
-      access_log /var/log/nginx/access.log;
+
+      log_format cache_log '$remote_addr - $remote_user [$time_local] "$request" $status $upstream_cache_status $body_bytes_sent  "$http_referer" "$http_user_agent"'; 
+
+      access_log /var/log/nginx/access.log cache_log;
     '';
 
     virtualHosts."cache.nix.keda.re" = {
@@ -57,6 +60,7 @@
           proxy_cache_valid  200 302  60d;
           expires max;
           add_header Cache-Control $cache_header always;
+          add_header X-Cache-Status $upstream_cache_status always;
           proxy_ssl_server_name on;
         '';
       };
