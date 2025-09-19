@@ -6,6 +6,11 @@
     optimise = {
       automatic = true;
     };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 4w";
+    };
     settings = {
       experimental-features = [
         "nix-command"
