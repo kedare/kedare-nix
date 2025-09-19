@@ -9,7 +9,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "garuda";
+  networking.hostName = "carbuncle";
   time.timeZone = "Europe/Madrid";
 
   boot.initrd.luks.devices = {
