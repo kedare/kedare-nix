@@ -18,4 +18,5 @@ tasks:
   upgrade:
     desc: Upgrade current host
     cmds:
+      - nix flake update
       - sudo nixos-rebuild switch --upgrade --flake .#${HOSTNAME} --show-trace
