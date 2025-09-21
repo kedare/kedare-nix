@@ -3,6 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     google-chrome
+    #libreoffice
     wezterm
     vscode
     ffmpeg-full

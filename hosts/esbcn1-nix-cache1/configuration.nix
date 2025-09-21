@@ -45,7 +45,6 @@
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
     recommendedZstdSettings = true;
-    recommendedProxySettings = true;
 
     appendHttpConfig = ''
       proxy_cache_path /var/cache/nginx/nix levels=1:2 keys_zone=nix:100m max_size=20g inactive=365d use_temp_path=off;
