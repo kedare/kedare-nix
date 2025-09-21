@@ -34,8 +34,19 @@
   #  };
   #};
 
+  security.acme = {
+    acceptTerms = true;
+    email = "acme@kedare.net";
+  };
+
   services.nginx = {
     enable = true;
+    recommendedTlsSettings = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedZstdSettings = true;
+    recommendedProxySettings = true;
+
     appendHttpConfig = ''
       proxy_cache_path /var/cache/nginx/nix levels=1:2 keys_zone=nix:100m max_size=20g inactive=365d use_temp_path=off;
 
@@ -53,6 +64,8 @@
     '';
 
     virtualHosts."cache.nix.keda.re" = {
+      addSSL = true;
+      enableACME = true;
       locations."/" = {
         proxyPass = "$upstream_endpoint";
         extraConfig = ''
