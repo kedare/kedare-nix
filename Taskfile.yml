@@ -19,8 +19,7 @@ tasks:
     desc: Set new configuration for next boot
     cmds:
       - sudo nixos-rebuild boot --flake .#${HOSTNAME} --show-trace
-  upgrade:
-    desc: Upgrade current host
+  update:
+    desc: Update dependencies and lock file
     cmds:
       - nix flake update
-      - sudo nixos-rebuild switch --upgrade --flake .#${HOSTNAME} --show-trace
