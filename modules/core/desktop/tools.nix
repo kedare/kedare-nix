@@ -4,6 +4,7 @@
   environment.systemPackages = with pkgs; [
     google-chrome
     libreoffice
+    nextcloud-client
     wezterm
     vscode
     ffmpeg-full
