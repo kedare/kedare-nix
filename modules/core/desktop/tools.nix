@@ -20,6 +20,7 @@
     hunspellDicts.fr-moderne
     hunspellDicts.es-es
     wireshark
+    gimp3-with-plugins
   ];
 
   fonts = {
