@@ -16,9 +16,9 @@
         "nix-command"
         "flakes"
       ];
-      substituters = [
-        "https://cache.nix.keda.re"
-      ];
+      #substituters = [
+      #  "https://cache.nix.keda.re"
+      #];
     };
   };
   programs.nix-ld.enable = true;
