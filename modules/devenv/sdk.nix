@@ -22,6 +22,7 @@
     libpq
     terraform
     qemu
+    nodejs_24
   ];
 
 #  programs.virt-manager.enable = true;
