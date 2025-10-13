@@ -40,14 +40,7 @@
 #  virtualisation.libvirtd.enable = true;
 #  virtualisation.spiceUSBRedirection.enable = true;
 
-virtualisation.docker = {
-  # Consider disabling the system wide Docker daemon
-  enable = false;
-
-  rootless = {
+  virtualisation.docker = {
     enable = true;
-    setSocketVariable = true;
   };
-};
-
 }
