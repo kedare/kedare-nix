@@ -51,8 +51,9 @@
     usbutils
     tcpdump
 
-    # Backup
+    # Backup and storage management
     kopia
+    rclone
 
     # Archiving
     zip
