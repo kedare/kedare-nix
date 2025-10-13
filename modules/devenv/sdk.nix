@@ -43,4 +43,6 @@
   virtualisation.docker = {
     enable = true;
   };
+
+  users.users.kedare.extraGroups = ["docker"];
 }
