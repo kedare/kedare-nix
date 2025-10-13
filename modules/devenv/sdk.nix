@@ -5,6 +5,7 @@
   environment.systemPackages = with pkgs; [
     gnumake
     clang
+    llvmPackages.libcxxClang
     gcc
     go
     gox
@@ -23,7 +24,16 @@
     terraform
     qemu
     nodejs_24
+    libyaml
+    libyaml.dev
   ];
+
+  # Ensure common native builds (Ruby gems, Rust bindgen) can find required headers/libs.
+  environment.shellInit = ''
+    export CPATH=${pkgs.libyaml.dev}/include''${CPATH:+:$CPATH}
+    export LIBRARY_PATH=${pkgs.libyaml}/lib''${LIBRARY_PATH:+:$LIBRARY_PATH}
+    export LIBCLANG_PATH=${pkgs.llvmPackages.libclang.lib}/lib
+  '';
 
 #  programs.virt-manager.enable = true;
 #  users.groups.libvirtd.members = ["kedare"];
@@ -41,4 +51,3 @@ virtualisation.docker = {
 };
 
 }
-
