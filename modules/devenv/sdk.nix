@@ -26,6 +26,7 @@
     nodejs_24
     libyaml
     libyaml.dev
+    act
   ];
 
   # Ensure common native builds (Ruby gems, Rust bindgen) can find required headers/libs.
