@@ -22,7 +22,10 @@
     "sd_mod"
   ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
-  boot.kernelModules = [ "kvm-amd" ];
+  boot.kernelModules = [
+    "kvm-amd"
+    "nct6775"
+  ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
