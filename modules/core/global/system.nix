@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ... }:
 
 {
   system.stateVersion = "25.05";
@@ -16,9 +16,9 @@
         "nix-command"
         "flakes"
       ];
-      #substituters = [
-      #  "https://cache.nix.keda.re"
-      #];
+      substituters = lib.mkBefore [
+        "https://cache.nix.keda.re"
+      ];
     };
   };
   programs.nix-ld.enable = true;
