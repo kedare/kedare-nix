@@ -6,7 +6,7 @@ tasks:
   build:
    desc: Build the NixOS configuration for the current host
    cmds:
-      - nixos-rebuild build --flake .#${HOSTNAME} --show-trace
+      - nixos-rebuild build --flake .
   lint:
     desc: Lint the files
     cmds:
@@ -14,11 +14,11 @@ tasks:
   switch:
     desc: Switch to the NixOS configuration for the current host
     cmds:
-      - sudo nixos-rebuild switch --flake .#${HOSTNAME} --show-trace
+      - sudo nixos-rebuild switch --flake .
   boot:
     desc: Set new configuration for next boot
     cmds:
-      - sudo nixos-rebuild boot --flake .#${HOSTNAME} --show-trace
+      - sudo nixos-rebuild boot --flake .
   update:
     desc: Update dependencies and lock file
     cmds:
