@@ -36,14 +36,14 @@
     export LIBCLANG_PATH=${pkgs.llvmPackages.libclang.lib}/lib
   '';
 
-#  programs.virt-manager.enable = true;
-#  users.groups.libvirtd.members = ["kedare"];
-#  virtualisation.libvirtd.enable = true;
-#  virtualisation.spiceUSBRedirection.enable = true;
+  #  programs.virt-manager.enable = true;
+  #  users.groups.libvirtd.members = ["kedare"];
+  #  virtualisation.libvirtd.enable = true;
+  #  virtualisation.spiceUSBRedirection.enable = true;
 
   virtualisation.docker = {
     enable = true;
   };
 
-  users.users.kedare.extraGroups = ["docker"];
+  users.users.kedare.extraGroups = [ "docker" ];
 }
