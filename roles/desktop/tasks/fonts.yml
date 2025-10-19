@@ -1,0 +1,47 @@
+---
+- name: Install fonts
+  ansible.builtin.apt:
+    name: "{{ fonts_packages }}"
+    state: present
+  when: fonts_packages is defined
+
+- name: Create fonts directory for Nerd Fonts
+  ansible.builtin.file:
+    path: /usr/local/share/fonts/nerd-fonts
+    state: directory
+    mode: "0755"
+
+- name: Download and install Nerd Fonts
+  block:
+    - name: Download Nerd Fonts
+      ansible.builtin.get_url:
+        url: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/{{ item }}.zip"
+        dest: "/tmp/{{ item }}.zip"
+        mode: "0644"
+      loop:
+        - 0xProto
+        - FiraCode
+        - DroidSansMono
+
+    - name: Extract Nerd Fonts
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ item }}.zip"
+        dest: /usr/local/share/fonts/nerd-fonts
+        remote_src: true
+      loop:
+        - 0xProto
+        - FiraCode
+        - DroidSansMono
+
+    - name: Update font cache
+      ansible.builtin.command: fc-cache -fv
+      changed_when: true
+
+    - name: Clean up downloaded font archives
+      ansible.builtin.file:
+        path: "/tmp/{{ item }}.zip"
+        state: absent
+      loop:
+        - 0xProto
+        - FiraCode
+        - DroidSansMono

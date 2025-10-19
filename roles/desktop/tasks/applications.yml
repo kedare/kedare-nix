@@ -1,0 +1,81 @@
+---
+- name: Install desktop applications
+  ansible.builtin.apt:
+    name: "{{ desktop_packages }}"
+    state: present
+  when: desktop_packages is defined
+
+- name: Add external package repositories
+  block:
+    - name: Add Google Chrome repository key
+      ansible.builtin.get_url:
+        url: https://dl.google.com/linux/linux_signing_key.pub
+        dest: /usr/share/keyrings/google-chrome-keyring.asc
+        mode: "0644"
+
+    - name: Add Google Chrome repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome-keyring.asc] http://dl.google.com/linux/chrome/deb/ stable main"
+        filename: google-chrome
+        state: present
+
+    - name: Add Microsoft repository key (for VS Code)
+      ansible.builtin.get_url:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        dest: /usr/share/keyrings/microsoft-keyring.asc
+        mode: "0644"
+
+    - name: Add VS Code repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft-keyring.asc] https://packages.microsoft.com/repos/code stable main"
+        filename: vscode
+        state: present
+
+    - name: Add 1Password repository key
+      ansible.builtin.get_url:
+        url: https://downloads.1password.com/linux/keys/1password.asc
+        dest: /usr/share/keyrings/1password-keyring.asc
+        mode: "0644"
+
+    - name: Add 1Password repository
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/1password-keyring.asc] https://downloads.1password.com/linux/debian/amd64 stable main"
+        filename: 1password
+        state: present
+
+    - name: Update apt cache after adding repositories
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install external applications
+      ansible.builtin.apt:
+        name:
+          - google-chrome-stable
+          - code
+          - 1password
+          - 1password-cli
+        state: present
+
+- name: Install yt-dlp (YouTube downloader)
+  ansible.builtin.get_url:
+    url: https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp
+    dest: /usr/local/bin/yt-dlp
+    mode: "0755"
+
+- name: Install wireshark
+  ansible.builtin.apt:
+    name: wireshark
+    state: present
+
+- name: Configure wireshark to allow non-root packet capture
+  ansible.builtin.debconf:
+    name: wireshark-common
+    question: wireshark-common/install-setuid
+    value: "true"
+    vtype: boolean
+
+- name: Add main user to wireshark group
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    groups: wireshark
+    append: true

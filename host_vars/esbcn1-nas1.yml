@@ -1,0 +1,79 @@
+---
+# esbcn1-nas1 - NAS Server with ZFS
+
+ansible_host: esbcn1-nas1.tailnet
+
+# Storage configuration
+storage_type: zfs
+zfs_pool_name: dpool
+zfs_mount_point: /mnt/dpool
+zfs_auto_scrub: true
+zfs_scrub_schedule: monthly
+
+# Bootloader
+bootloader: grub
+
+# Kernel modules
+kernel_modules:
+  - ahci
+  - ohci_pci
+  - ehci_pci
+  - pata_atiixp
+  - usb_storage
+  - usbhid
+  - sd_mod
+  - dm-snapshot
+
+# Samba configuration
+samba_enabled: true
+samba_workgroup: WORKGROUP
+samba_server_string: "NAS Server"
+samba_netbios_name: smbnix
+samba_enable_wsdd: true
+samba_shares:
+  - name: public
+    path: /mnt/dpool/public
+    guest_ok: true
+    read_only: false
+    browseable: true
+  - name: private
+    path: /mnt/dpool/private
+    valid_users: kedare
+    guest_ok: false
+    read_only: false
+    browseable: false
+
+# NFS configuration
+nfs_enabled: true
+nfs_exports:
+  - path: /mnt/dpool/share
+    clients:
+      - host: 192.168.89.170
+        options: "rw,sync,no_subtree_check"
+      - host: 192.168.89.160
+        options: "rw,sync,no_subtree_check"
+
+# Avahi (mDNS) for service discovery
+avahi_enabled: true
+
+# Kopia backup configuration
+kopia_enabled: true
+kopia_repository: /mnt/dpool/backups
+kopia_schedule: daily
+kopia_retention_daily: 7
+kopia_retention_weekly: 4
+kopia_retention_monthly: 12
+
+# Firewall rules specific to NAS
+nas_firewall_rules:
+  - { port: 445, proto: tcp, comment: "Samba" }
+  - { port: 139, proto: tcp, comment: "NetBIOS" }
+  - { port: 2049, proto: tcp, comment: "NFS" }
+  - { port: 5353, proto: udp, comment: "mDNS" }
+
+# Enabled roles
+enabled_roles:
+  - common
+  - server
+  - nas
+  - monitoring

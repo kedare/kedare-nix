@@ -1,0 +1,40 @@
+---
+- name: Add graphics-drivers PPA
+  ansible.builtin.apt_repository:
+    repo: ppa:graphics-drivers/ppa
+    state: present
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install NVIDIA proprietary driver
+  ansible.builtin.apt:
+    name:
+      - nvidia-driver-550  # Latest stable driver
+      - nvidia-settings
+      - nvidia-prime
+    state: present
+
+- name: Install 32-bit NVIDIA libraries for gaming
+  ansible.builtin.apt:
+    name:
+      - nvidia-driver-550:i386
+      - libgl1-mesa-dri:i386
+    state: present
+  when: gpu_32bit_support | default(false)
+
+- name: Blacklist nouveau driver
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/blacklist-nouveau.conf
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    mode: "0644"
+  notify: Update initramfs
+
+- name: Add user to video group
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    groups: video
+    append: true

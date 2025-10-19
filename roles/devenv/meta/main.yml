@@ -1,0 +1,29 @@
+---
+galaxy_info:
+  author: kedare
+  description: Development environment configuration
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble  # 24.04
+
+dependencies:
+  - role: geerlingguy.docker
+    vars:
+      docker_users:
+        - "{{ main_user }}"
+      docker_install_compose: true
+      docker_compose_version: "v2.24.0"
+
+  - role: geerlingguy.postgresql
+    vars:
+      postgresql_global_config_options:
+        - option: listen_addresses
+          value: '*'
+      postgresql_hba_entries:
+        - { type: local, database: all, user: postgres, auth_method: peer }
+        - { type: local, database: all, user: all, auth_method: peer }
+        - { type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: md5 }
+        - { type: host, database: all, user: all, address: '::1/128', auth_method: md5 }

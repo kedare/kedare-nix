@@ -1,0 +1,36 @@
+---
+- name: Install CUPS and printer drivers
+  ansible.builtin.apt:
+    name:
+      - cups
+      - cups-filters
+      - cups-browsed
+      - printer-driver-gutenprint
+      - printer-driver-brlaser
+      - system-config-printer
+      - avahi-daemon
+    state: present
+
+- name: Enable and start CUPS service
+  ansible.builtin.service:
+    name: cups
+    enabled: true
+    state: started
+
+- name: Enable and start cups-browsed service
+  ansible.builtin.service:
+    name: cups-browsed
+    enabled: true
+    state: started
+
+- name: Enable and start Avahi daemon for printer discovery
+  ansible.builtin.service:
+    name: avahi-daemon
+    enabled: true
+    state: started
+
+- name: Add main user to lpadmin group
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    groups: lpadmin
+    append: true

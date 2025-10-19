@@ -1,0 +1,27 @@
+---
+- name: Create nginx cache directory
+  ansible.builtin.file:
+    path: "{{ nginx_cache_dir | default('/var/cache/nginx') }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Create web root directory
+  ansible.builtin.file:
+    path: "/var/www/{{ item.server_name }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+  loop: "{{ nginx_vhosts | default([]) }}"
+  when: item.server_name is defined and item.root is defined
+
+- name: Configure cache firewall rules
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment }}"
+  loop: "{{ cache_firewall_rules | default([]) }}"
+  when: ufw_enabled | default(true)

@@ -1,0 +1,57 @@
+---
+- name: Install GNOME desktop environment
+  ansible.builtin.apt:
+    name:
+      - ubuntu-desktop
+      - gnome-shell
+      - gnome-session
+      - gdm3
+      - gnome-tweaks
+      - gnome-shell-extensions
+      - chrome-gnome-shell
+    state: present
+
+- name: Set GDM as default display manager
+  ansible.builtin.debconf:
+    name: gdm3
+    question: shared/default-x-display-manager
+    value: gdm3
+    vtype: select
+
+- name: Enable GDM service
+  ansible.builtin.service:
+    name: gdm
+    enabled: true
+    state: started
+
+- name: Configure GDM for Wayland
+  ansible.builtin.lineinfile:
+    path: /etc/gdm3/custom.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: "^#?WaylandEnable=", line: "WaylandEnable=true" }
+  notify: Restart GDM
+  when: enable_wayland | default(true)
+
+- name: Create GNOME extensions directory for user
+  ansible.builtin.file:
+    path: "/home/{{ main_user }}/.local/share/gnome-shell/extensions"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: "0755"
+
+- name: Install GNOME extensions (manual installation note)
+  ansible.builtin.debug:
+    msg: |
+      GNOME extensions should be installed manually via:
+      1. Extensions app (install gnome-shell-extension-manager)
+      2. Browser at https://extensions.gnome.org
+
+      Recommended extensions from NixOS config:
+      {% for ext in gnome_extensions | default([]) %}
+      - {{ ext }}
+      {% endfor %}
+  when: gnome_extensions is defined and gnome_extensions | length > 0

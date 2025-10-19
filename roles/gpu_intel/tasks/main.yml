@@ -1,0 +1,26 @@
+---
+- name: Install Intel GPU drivers
+  ansible.builtin.apt:
+    name:
+      - mesa-vulkan-drivers
+      - intel-media-va-driver-non-free
+      - i965-va-driver
+      - vainfo
+      - intel-gpu-tools
+    state: present
+
+- name: Enable VA-API for Intel GPU
+  ansible.builtin.copy:
+    dest: /etc/profile.d/intel-vaapi.sh
+    content: |
+      export LIBVA_DRIVER_NAME=iHD
+    mode: "0644"
+  when: enable_vaapi | default(true)
+
+- name: Add user to video and render groups
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    groups:
+      - video
+      - render
+    append: true

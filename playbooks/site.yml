@@ -1,0 +1,17 @@
+---
+# Main site playbook - Orchestrates all hosts
+- name: Configure all hosts
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Display host information
+      ansible.builtin.debug:
+        msg: "Configuring {{ inventory_hostname }} ({{ ansible_distribution }} {{ ansible_distribution_version }})"
+
+- name: Configure desktops
+  import_playbook: desktops.yml
+
+- name: Configure servers
+  import_playbook: servers.yml

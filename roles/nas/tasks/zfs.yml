@@ -1,0 +1,53 @@
+---
+- name: Install ZFS packages
+  ansible.builtin.apt:
+    name:
+      - zfsutils-linux
+      - zfs-zed
+    state: present
+
+- name: Load ZFS kernel module
+  community.general.modprobe:
+    name: zfs
+    state: present
+
+- name: Check if ZFS pool exists
+  ansible.builtin.command: zpool list {{ zfs_pool_name }}
+  register: zfs_pool_check
+  failed_when: false
+  changed_when: false
+
+- name: Import ZFS pool if it exists but is not imported
+  ansible.builtin.command: zpool import {{ zfs_pool_name }}
+  when: zfs_pool_check.rc != 0
+  register: zfs_pool_import
+  failed_when: zfs_pool_import.rc != 0 and 'no such pool available' not in zfs_pool_import.stderr
+
+- name: Set ZFS pool to auto-mount
+  ansible.builtin.command: zpool set cachefile=/etc/zfs/zpool.cache {{ zfs_pool_name }}
+  when: zfs_pool_check.rc == 0 or zfs_pool_import.changed
+  changed_when: true
+
+- name: Enable ZFS auto-scrub
+  ansible.builtin.systemd:
+    name: zfs-scrub@{{ zfs_pool_name }}.timer
+    enabled: true
+    state: started
+  when: zfs_auto_scrub | default(false)
+
+- name: Create mount point for ZFS pool
+  ansible.builtin.file:
+    path: "{{ zfs_mount_point }}"
+    state: directory
+    mode: "0755"
+  when: zfs_mount_point is defined
+
+- name: Enable and start ZFS services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - zfs-import-cache
+    - zfs-mount
+    - zfs-zed

@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: kedare
+  description: NAS configuration (ZFS, Samba, NFS, Kopia)
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble  # 24.04
+
+dependencies:
+  - role: bertvv.samba
+    vars:
+      samba_workgroup: "{{ samba_workgroup | default('WORKGROUP') }}"
+      samba_server_string: "{{ samba_server_string | default('NAS Server') }}"
+      samba_netbios_name: "{{ samba_netbios_name | default('smbnix') }}"
+      samba_shares: "{{ samba_shares | default([]) }}"
+
+  - role: geerlingguy.nfs
+    vars:
+      nfs_exports: "{{ nfs_exports | default([]) }}"
+    when: nfs_enabled | default(false)

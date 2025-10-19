@@ -1,0 +1,28 @@
+---
+- name: Import system configuration tasks
+  ansible.builtin.import_tasks: system.yml
+  tags: [common, system]
+
+- name: Import user configuration tasks
+  ansible.builtin.import_tasks: users.yml
+  tags: [common, users]
+
+# SSH configuration is now handled by devsec.hardening.ssh_hardening role in meta/main.yml
+# Keep basic SSH server installation here
+- name: Ensure SSH server is installed
+  ansible.builtin.apt:
+    name: openssh-server
+    state: present
+  tags: [common, ssh]
+
+- name: Import package installation tasks
+  ansible.builtin.import_tasks: packages.yml
+  tags: [common, packages]
+
+- name: Import shell configuration tasks
+  ansible.builtin.import_tasks: shell.yml
+  tags: [common, shell]
+
+- name: Import network configuration tasks
+  ansible.builtin.import_tasks: network.yml
+  tags: [common, network]

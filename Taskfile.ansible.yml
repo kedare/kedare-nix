@@ -1,0 +1,236 @@
+version: '3'
+
+# Ansible Infrastructure Management Tasks
+
+vars:
+  PLAYBOOKS_DIR: playbooks
+  REQUIREMENTS_FILE: requirements.yml
+
+tasks:
+  install:
+    desc: Install Ansible Galaxy dependencies
+    cmds:
+      - ansible-galaxy install -r {{.REQUIREMENTS_FILE}}
+      - ansible-galaxy collection install -r {{.REQUIREMENTS_FILE}}
+
+  bootstrap:
+    desc: Bootstrap fresh Ubuntu 24.04 installations
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/bootstrap.yml
+
+  test:
+    desc: Test connectivity to all hosts
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/test.yml
+
+  check:
+    desc: Check playbook syntax
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --syntax-check
+
+  lint:
+    desc: Lint Ansible files
+    cmds:
+      - ansible-lint {{.PLAYBOOKS_DIR}}/*.yml
+
+  deploy:
+    desc: Deploy configuration to all hosts
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml
+
+  deploy:desktops:
+    desc: Deploy configuration to desktop machines only
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/desktops.yml
+
+  deploy:servers:
+    desc: Deploy configuration to server machines only
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/servers.yml
+
+  deploy:host:
+    desc: Deploy to specific host (use task deploy:host HOST=garuda)
+    cmds:
+      - |
+        if [ -z "{{.HOST}}" ]; then
+          echo "Error: HOST variable not set. Usage: task deploy:host HOST=garuda"
+          exit 1
+        fi
+        ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --limit {{.HOST}}
+    vars:
+      HOST: '{{.HOST | default ""}}'
+
+  deploy:check:
+    desc: Dry run deployment (show what would change)
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --check --diff
+
+  deploy:tags:
+    desc: Deploy with specific tags (use task deploy:tags TAGS=common,desktop)
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --tags {{.TAGS}}
+    vars:
+      TAGS: '{{.TAGS | default "all"}}'
+
+  ping:
+    desc: Ping all hosts
+    cmds:
+      - ansible all -m ping
+
+  update:roles:
+    desc: Update Ansible Galaxy roles
+    cmds:
+      - ansible-galaxy install -r {{.REQUIREMENTS_FILE}} --force
+      - ansible-galaxy collection install -r {{.REQUIREMENTS_FILE}} --force
+
+  vault:edit:
+    desc: Edit encrypted vault file
+    cmds:
+      - ansible-vault edit inventory/group_vars/vault.yml
+
+  vault:create:
+    desc: Create encrypted vault file
+    cmds:
+      - ansible-vault create inventory/group_vars/vault.yml
+
+  vault:view:
+    desc: View encrypted vault file
+    cmds:
+      - ansible-vault view inventory/group_vars/vault.yml
+
+  clean:
+    desc: Clean temporary files
+    cmds:
+      - find . -type f -name "*.retry" -delete
+      - find . -type d -name "__pycache__" -exec rm -rf {} +
+      - rm -rf /tmp/ansible_facts
+
+  list:hosts:
+    desc: List all hosts in inventory
+    cmds:
+      - ansible all --list-hosts
+
+  list:tags:
+    desc: List all available tags
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --list-tags
+
+  list:tasks:
+    desc: List all tasks in site playbook
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --list-tasks
+
+  facts:
+    desc: Gather and display facts for a host (use task facts HOST=garuda)
+    cmds:
+      - ansible {{.HOST}} -m setup
+    vars:
+      HOST: '{{.HOST | default "all"}}'
+
+  # Common role tasks
+  common:
+    desc: Deploy only common role
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --tags common
+
+  desktop:
+    desc: Deploy only desktop role
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/desktops.yml --tags desktop
+
+  devenv:
+    desc: Deploy only development environment
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --tags devenv
+
+  gaming:
+    desc: Deploy only gaming software
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/desktops.yml --tags gaming
+
+  gpu:
+    desc: Deploy only GPU drivers
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/desktops.yml --tags gpu
+
+  nas:
+    desc: Deploy only NAS configuration
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/servers.yml --tags nas
+
+  monitoring:
+    desc: Deploy only monitoring stack
+    cmds:
+      - ansible-playbook {{.PLAYBOOKS_DIR}}/site.yml --tags monitoring
+
+  # Utility tasks
+  reboot:
+    desc: Reboot specific host or group (use task reboot HOST=garuda)
+    cmds:
+      - ansible {{.HOST}} -m reboot --become
+    vars:
+      HOST: '{{.HOST | default "all"}}'
+
+  update:packages:
+    desc: Update all packages on all hosts
+    cmds:
+      - ansible all -m apt -a "upgrade=dist update_cache=yes" --become
+
+  shell:
+    desc: Run ad-hoc shell command on hosts (use task shell HOST=all CMD="uptime")
+    cmds:
+      - ansible {{.HOST}} -m shell -a "{{.CMD}}" --become
+    vars:
+      HOST: '{{.HOST | default "all"}}'
+      CMD: '{{.CMD | default "uptime"}}'
+
+  # Development tasks
+  dev:setup:
+    desc: Set up development environment for testing
+    cmds:
+      - task: install
+      - task: check
+      - echo "Development environment ready"
+
+  dev:test:
+    desc: Run full test suite
+    cmds:
+      - task: check
+      - task: lint
+      - task: ping
+
+  # CI/CD tasks
+  ci:validate:
+    desc: Validate configuration (for CI/CD)
+    cmds:
+      - task: check
+      - task: lint
+      - echo "✓ Configuration validated successfully"
+
+  # Help and documentation
+  help:
+    desc: Show detailed help
+    cmds:
+      - echo "Ansible Infrastructure Management"
+      - echo ""
+      - echo "Common commands:"
+      - echo "  task install          - Install dependencies"
+      - echo "  task deploy           - Deploy to all hosts"
+      - echo "  task deploy:desktops  - Deploy to desktops only"
+      - echo "  task deploy:servers   - Deploy to servers only"
+      - echo "  task deploy:host HOST=garuda - Deploy to specific host"
+      - echo "  task ping             - Test connectivity"
+      - echo ""
+      - echo "Role-specific deployments:"
+      - echo "  task common           - Deploy common role"
+      - echo "  task desktop          - Deploy desktop role"
+      - echo "  task devenv           - Deploy development environment"
+      - echo "  task gaming           - Deploy gaming software"
+      - echo "  task nas              - Deploy NAS configuration"
+      - echo ""
+      - echo "Maintenance:"
+      - echo "  task update:packages  - Update all packages"
+      - echo "  task update:roles     - Update Galaxy roles"
+      - echo "  task clean            - Clean temporary files"
+      - echo ""
+      - echo "For full list of tasks, run: task --list"

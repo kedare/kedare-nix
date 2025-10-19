@@ -1,0 +1,22 @@
+---
+# Server-specific configuration
+
+# Use systemd-networkd instead of NetworkManager
+use_systemd_networkd: true
+
+# Disable IPv6 temporary addresses
+disable_ipv6_temp_addr: true
+
+# Minimal package set for servers
+server_minimal: true
+
+# No desktop environment
+desktop_environment: none
+
+# Server-specific packages
+server_packages:
+  - screen
+  - tmux
+  - iperf3
+  - ethtool
+  - smartmontools

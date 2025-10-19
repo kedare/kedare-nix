@@ -1,0 +1,14 @@
+---
+- name: Install fingerprint reader support
+  ansible.builtin.apt:
+    name:
+      - fprintd
+      - libpam-fprintd
+    state: present
+
+- name: Enable fingerprint authentication in PAM
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/common-auth
+    insertafter: "^# here are the per-package modules"
+    line: "auth    sufficient      pam_fprintd.so"
+    state: present

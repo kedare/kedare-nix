@@ -1,0 +1,20 @@
+---
+# Ansible-lint configuration
+skip_list:
+  - yaml[line-length]  # Allow long lines
+  - name[casing]       # Allow flexible task naming
+  - no-changed-when    # Some commands don't need changed_when
+  - command-instead-of-module  # Sometimes commands are necessary
+  - package-latest     # We want latest versions
+
+warn_list:
+  - experimental  # Warn about experimental features
+
+exclude_paths:
+  - .git/
+  - .github/
+  - collections/
+  - roles/external/
+
+use_default_rules: true
+parseable: true

@@ -1,0 +1,126 @@
+---
+# Python
+- name: Add deadsnakes PPA for Python 3.13
+  ansible.builtin.apt_repository:
+    repo: ppa:deadsnakes/ppa
+    state: present
+
+- name: Install Python 3.13 and tools
+  ansible.builtin.apt:
+    name:
+      - python3.13
+      - python3.13-dev
+      - python3.13-venv
+      - python3-pip
+      - python3-virtualenv
+    state: present
+    update_cache: true
+
+- name: Install Python package managers
+  ansible.builtin.pip:
+    name:
+      - poetry
+      - uv
+    state: present
+    executable: pip3
+
+# Go
+- name: Remove old Go installation
+  ansible.builtin.file:
+    path: /usr/local/go
+    state: absent
+
+- name: Download Go
+  ansible.builtin.get_url:
+    url: "https://go.dev/dl/go1.23.0.linux-amd64.tar.gz"
+    dest: /tmp/go.tar.gz
+    mode: "0644"
+
+- name: Extract Go
+  ansible.builtin.unarchive:
+    src: /tmp/go.tar.gz
+    dest: /usr/local
+    remote_src: true
+    creates: /usr/local/go/bin/go
+
+- name: Add Go to PATH
+  ansible.builtin.copy:
+    dest: /etc/profile.d/go.sh
+    content: |
+      export PATH=$PATH:/usr/local/go/bin
+      export GOPATH=$HOME/go
+      export PATH=$PATH:$GOPATH/bin
+    mode: "0644"
+
+- name: Install Go tools
+  ansible.builtin.shell: |
+    source /etc/profile.d/go.sh
+    go install {{ item }}@latest
+  args:
+    executable: /bin/bash
+    creates: "/home/{{ main_user }}/go/bin/{{ item.split('/')[-1] }}"
+  loop:
+    - github.com/mitchellh/gox
+    - github.com/go-delve/delve/cmd/dlv
+    - github.com/golangci/golangci-lint/cmd/golangci-lint
+    - golang.org/x/tools/gopls
+    - github.com/cweill/gotests/gotests
+    - github.com/josharian/impl
+  become: true
+  become_user: "{{ main_user }}"
+  environment:
+    HOME: "/home/{{ main_user }}"
+
+# Ruby
+- name: Install Ruby
+  ansible.builtin.apt:
+    name:
+      - ruby
+      - ruby-dev
+    state: present
+
+# Java (Zulu OpenJDK)
+- name: Add Azul Zulu repository key
+  ansible.builtin.get_url:
+    url: https://repos.azul.com/azul-repo.key
+    dest: /usr/share/keyrings/azul-keyring.asc
+    mode: "0644"
+
+- name: Add Azul Zulu repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/azul-keyring.asc] https://repos.azul.com/zulu/deb stable main"
+    filename: zulu
+    state: present
+
+- name: Install Zulu JDK 24
+  ansible.builtin.apt:
+    name: zulu24-jdk
+    state: present
+    update_cache: true
+
+# Perl
+- name: Install Perl
+  ansible.builtin.apt:
+    name:
+      - perl
+      - libperl-dev
+    state: present
+
+# Node.js
+- name: Add NodeSource repository key
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+    dest: /usr/share/keyrings/nodesource-keyring.asc
+    mode: "0644"
+
+- name: Add NodeSource repository for Node.js 24
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/nodesource-keyring.asc] https://deb.nodesource.com/node_24.x nodistro main"
+    filename: nodesource
+    state: present
+
+- name: Install Node.js 24
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: true

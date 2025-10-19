@@ -1,0 +1,53 @@
+---
+# bahamut - Desktop Workstation with NVIDIA GPU
+
+ansible_host: bahamut.tailnet
+
+# Storage configuration - Software RAID with LUKS
+storage_type: raid_luks_xfs
+raid_devices:
+  - /dev/sda
+  - /dev/sdb
+raid_level: 1
+raid_arrays:
+  - name: md0
+    devices: [/dev/sda1, /dev/sdb1]
+    level: 1
+    filesystem: xfs
+    mount: /
+    luks_name: cryptoroot
+  - name: md1
+    devices: [/dev/sda2, /dev/sdb2]
+    level: 1
+    filesystem: xfs
+    mount: /mnt/data
+    luks_name: cryptdata
+
+# Kernel modules
+kernel_modules:
+  - ahci
+  - xhci_pci
+  - usb_storage
+  - usbhid
+  - sd_mod
+  - dm-snapshot
+  - nct6775  # Hardware monitoring for motherboard sensors
+
+# GPU configuration
+gpu_vendor: nvidia
+gpu_driver: proprietary
+gpu_32bit_support: true
+
+# Hardware monitoring
+enable_sensor_modules: true
+sensor_modules:
+  - nct6775
+
+# Enabled roles
+enabled_roles:
+  - common
+  - desktop
+  - devenv
+  - gaming
+  - gpu_nvidia
+  - monitoring

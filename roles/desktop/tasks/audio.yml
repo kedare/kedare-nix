@@ -1,0 +1,38 @@
+---
+- name: Install PipeWire and audio packages
+  ansible.builtin.apt:
+    name:
+      - pipewire
+      - pipewire-audio-client-libraries
+      - pipewire-pulse
+      - pipewire-alsa
+      - pipewire-jack
+      - wireplumber
+      - libspa-0.2-bluetooth
+      - libspa-0.2-jack
+      - pavucontrol
+      - rtkit
+    state: present
+
+- name: Enable and start PipeWire services for user
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    scope: user
+    state: started
+  loop:
+    - pipewire
+    - pipewire-pulse
+    - wireplumber
+  become: true
+  become_user: "{{ main_user }}"
+  environment:
+    XDG_RUNTIME_DIR: "/run/user/{{ main_user_uid }}"
+
+- name: Install 32-bit ALSA libraries for gaming
+  ansible.builtin.apt:
+    name:
+      - libasound2:i386
+      - libpulse0:i386
+    state: present
+  when: "'gaming_machines' in group_names"

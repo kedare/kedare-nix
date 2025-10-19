@@ -1,0 +1,40 @@
+---
+- name: Install Netdata
+  ansible.builtin.shell: |
+    curl -Ss https://my-netdata.io/kickstart.sh | bash -s -- --non-interactive --stable-channel
+  args:
+    creates: /usr/sbin/netdata
+
+- name: Enable and start Netdata service
+  ansible.builtin.service:
+    name: netdata
+    enabled: true
+    state: started
+
+- name: Configure UFW rule for Netdata (local access only)
+  community.general.ufw:
+    rule: allow
+    port: "{{ netdata_port | default(19999) }}"
+    proto: tcp
+    from_ip: "{{ item }}"
+    comment: "Netdata monitoring"
+  loop:
+    - 127.0.0.1
+    - "{{ ufw_whitelisted_subnets | default([]) }}"
+  when: ufw_enabled | default(true) and netdata_enabled | default(true)
+
+- name: Load hardware monitoring kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ sensor_modules | default([]) }}"
+  when: enable_sensor_modules | default(false)
+
+- name: Configure kernel modules to load at boot
+  ansible.builtin.lineinfile:
+    path: /etc/modules
+    line: "{{ item }}"
+    create: true
+    mode: "0644"
+  loop: "{{ sensor_modules | default([]) }}"
+  when: enable_sensor_modules | default(false)

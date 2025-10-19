@@ -1,0 +1,26 @@
+---
+- name: Install Bluetooth packages
+  ansible.builtin.apt:
+    name:
+      - bluez
+      - bluez-tools
+      - blueman
+    state: present
+
+- name: Configure Bluetooth settings
+  ansible.builtin.lineinfile:
+    path: /etc/bluetooth/main.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: "^#?FastConnectable =", line: "FastConnectable = true" }
+    - { regexp: "^#?Experimental =", line: "Experimental = true" }
+  notify: Restart Bluetooth
+  when: bluetooth_experimental | default(true)
+
+- name: Enable and start Bluetooth service
+  ansible.builtin.service:
+    name: bluetooth
+    enabled: true
+    state: started

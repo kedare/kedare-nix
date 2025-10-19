@@ -1,0 +1,43 @@
+---
+- name: Install AMD GPU drivers (Mesa)
+  ansible.builtin.apt:
+    name:
+      - mesa-vulkan-drivers
+      - mesa-utils
+      - vulkan-tools
+      - libgl1-mesa-dri
+      - libglx-mesa0
+      - mesa-va-drivers
+      - mesa-vdpau-drivers
+    state: present
+
+- name: Install AMDVLK proprietary driver
+  block:
+    - name: Download AMDVLK driver
+      ansible.builtin.get_url:
+        url: https://github.com/GPUOpen-Drivers/AMDVLK/releases/latest/download/amdvlk_2024.Q4.2_amd64.deb
+        dest: /tmp/amdvlk.deb
+        mode: "0644"
+
+    - name: Install AMDVLK driver
+      ansible.builtin.apt:
+        deb: /tmp/amdvlk.deb
+        state: present
+  when: gpu_driver == 'amdvlk'
+
+- name: Install 32-bit AMD GPU libraries for gaming
+  ansible.builtin.apt:
+    name:
+      - mesa-vulkan-drivers:i386
+      - libgl1-mesa-dri:i386
+      - libglx-mesa0:i386
+    state: present
+  when: gpu_32bit_support | default(false)
+
+- name: Add user to video and render groups
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    groups:
+      - video
+      - render
+    append: true

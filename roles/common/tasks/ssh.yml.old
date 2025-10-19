@@ -1,0 +1,25 @@
+---
+- name: Install OpenSSH server
+  ansible.builtin.apt:
+    name: openssh-server
+    state: present
+
+- name: Configure SSH daemon
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    validate: "sshd -t -f %s"
+  loop:
+    - { regexp: "^PermitRootLogin", line: "PermitRootLogin {{ ssh_permit_root_login | default('no') }}" }
+    - { regexp: "^PasswordAuthentication", line: "PasswordAuthentication {{ ssh_password_authentication | default('no') }}" }
+    - { regexp: "^X11Forwarding", line: "X11Forwarding {{ ssh_x11_forwarding | default('no') }}" }
+    - { regexp: "^MaxAuthTries", line: "MaxAuthTries {{ ssh_max_auth_tries | default(3) }}" }
+  notify: Restart SSH
+
+- name: Ensure SSH service is enabled and started
+  ansible.builtin.service:
+    name: ssh
+    state: started
+    enabled: true

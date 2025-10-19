@@ -1,0 +1,91 @@
+---
+# esbcn1-nix-cache1 - Generic Cache Server (Nginx)
+
+ansible_host: cache.nix.keda.re
+
+# Virtual machine
+is_virtual_machine: true
+vm_type: qemu
+
+# Storage configuration
+storage_type: ext4
+filesystem: ext4
+
+# Kernel modules for QEMU guest
+kernel_modules:
+  - ata_piix
+  - uhci_hcd
+  - virtio_pci
+  - virtio_scsi
+  - sd_mod
+  - sr_mod
+
+# Nginx configuration
+nginx_enabled: true
+nginx_remove_default_vhost: true
+nginx_vhosts:
+  - listen: "80"
+    server_name: "cache.nix.keda.re"
+    return: "301 https://$server_name$request_uri"
+    filename: "cache.nix.keda.re.80.conf"
+
+  - listen: "443 ssl http2"
+    server_name: "cache.nix.keda.re"
+    root: "/var/www/cache.nix.keda.re"
+    index: "index.html"
+
+    extra_parameters: |
+      ssl_certificate /etc/letsencrypt/live/cache.nix.keda.re/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/cache.nix.keda.re/privkey.pem;
+      ssl_protocols TLSv1.2 TLSv1.3;
+      ssl_ciphers HIGH:!aNULL:!MD5;
+
+      # Generic caching configuration
+      proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=cache_zone:100m max_size=20g inactive=365d use_temp_path=off;
+
+      location / {
+        # Proxy to upstream or serve local content
+        try_files $uri $uri/ =404;
+      }
+
+      # Example: Proxy cache configuration (customize as needed)
+      # location /cached/ {
+      #   proxy_pass http://upstream-server;
+      #   proxy_cache cache_zone;
+      #   proxy_cache_valid 200 365d;
+      #   proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
+      #   add_header X-Cache-Status $upstream_cache_status;
+      # }
+
+    filename: "cache.nix.keda.re.443.conf"
+
+# SSL/TLS with Let's Encrypt
+certbot_enabled: true
+certbot_auto_renew: true
+certbot_auto_renew_user: root
+certbot_auto_renew_hour: "3"
+certbot_auto_renew_minute: "30"
+certbot_admin_email: acme@kedare.net
+certbot_create_if_missing: true
+certbot_create_method: standalone
+certbot_create_standalone_stop_services:
+  - nginx
+certbot_certs:
+  - domains:
+      - cache.nix.keda.re
+
+# Cache storage
+nginx_cache_dir: /var/cache/nginx
+nginx_cache_size: 20g
+
+# Firewall rules
+cache_firewall_rules:
+  - { port: 80, proto: tcp, comment: "HTTP" }
+  - { port: 443, proto: tcp, comment: "HTTPS" }
+
+# Enabled roles
+enabled_roles:
+  - common
+  - server
+  - cache_server
+  - devenv

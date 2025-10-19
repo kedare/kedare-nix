@@ -1,0 +1,35 @@
+---
+# Server machines configuration
+- name: Configure server machines
+  hosts: servers
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: common
+      tags: [common, base]
+
+    - role: server
+      tags: [server]
+
+    - role: monitoring
+      tags: [monitoring]
+
+  tasks:
+    - name: Apply development environment role
+      ansible.builtin.include_role:
+        name: devenv
+      when: "'devenv' in enabled_roles | default([])"
+      tags: [devenv]
+
+    - name: Apply NAS role
+      ansible.builtin.include_role:
+        name: nas
+      when: "'nas_servers' in group_names"
+      tags: [nas, storage]
+
+    - name: Apply cache server role
+      ansible.builtin.include_role:
+        name: cache_server
+      when: "'cache_servers' in group_names"
+      tags: [cache, nginx]

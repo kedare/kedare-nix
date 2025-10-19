@@ -1,0 +1,33 @@
+---
+- name: Install QEMU and KVM packages
+  ansible.builtin.apt:
+    name:
+      - qemu-kvm
+      - qemu-utils
+      - libvirt-daemon-system
+      - libvirt-clients
+      - bridge-utils
+      - virt-manager
+      - ovmf  # UEFI firmware
+      - spice-client-gtk
+    state: present
+
+- name: Add main user to libvirt groups
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    groups:
+      - libvirt
+      - kvm
+    append: true
+
+- name: Enable and start libvirtd service
+  ansible.builtin.service:
+    name: libvirtd
+    enabled: true
+    state: started
+
+- name: Enable default libvirt network
+  community.libvirt.virt_net:
+    name: default
+    state: active
+    autostart: true

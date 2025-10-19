@@ -1,0 +1,96 @@
+---
+# Desktop-specific configuration
+
+# Desktop environment
+desktop_environment: gnome
+display_manager: gdm
+enable_wayland: true
+
+# Audio
+audio_server: pipewire
+enable_pipewire_alsa: true
+enable_pipewire_pulse: true
+enable_realtime_kit: true
+
+# Printing
+enable_printing: true
+printer_drivers:
+  - cups-filters
+  - cups-browsed
+  - printer-driver-gutenprint
+  - printer-driver-brlaser
+
+# Bluetooth
+enable_bluetooth: true
+bluetooth_experimental: true
+
+# Fingerprint reader
+enable_fingerprint: true
+
+# Plymouth boot splash
+enable_plymouth: true
+
+# Additional locales for desktop
+locales:
+  - en_US.UTF-8
+  - fr_FR.UTF-8
+  - es_ES.UTF-8
+
+# GNOME extensions
+gnome_extensions:
+  - forge@jmmaranan.com
+  - trayIconsReloaded@selfmade.pl
+  - tailscale-status@maxgallup.github.com
+
+# Desktop applications
+desktop_packages:
+  # Browsers
+  - firefox
+  # - google-chrome-stable  # Requires external repo
+  # Office
+  - libreoffice
+  # Media
+  - vlc
+  - ffmpeg
+  - gimp
+  # Communication
+  - nextcloud-desktop
+  # Development
+  - code  # VS Code - requires external repo
+  # Utilities
+  - gnome-tweaks
+  - calibre
+  # Spell checking
+  - aspell
+  - aspell-en
+  - aspell-fr
+  - aspell-es
+  - hunspell
+  - hunspell-en-us
+  - hunspell-fr
+  - hunspell-es
+
+# Fonts
+fonts_packages:
+  - fonts-firacode
+  - fonts-font-awesome
+  - fonts-noto
+  - fonts-noto-color-emoji
+
+# External desktop packages
+desktop_external_packages:
+  - name: google-chrome
+    method: deb
+    url: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  - name: vscode
+    method: apt_repo
+    repo: "deb [arch=amd64] https://packages.microsoft.com/repos/code stable main"
+    key_url: https://packages.microsoft.com/keys/microsoft.asc
+  - name: 1password
+    method: apt_repo
+    repo: "deb [arch=amd64] https://downloads.1password.com/linux/debian/amd64 stable main"
+    key_url: https://downloads.1password.com/linux/keys/1password.asc
+  - name: wezterm
+    method: apt_repo
+    repo: "deb [arch=amd64] https://apt.fury.io/wez/ * *"
+    key_url: https://apt.fury.io/wez/gpg.key

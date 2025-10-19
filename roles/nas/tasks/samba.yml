@@ -1,0 +1,23 @@
+---
+- name: Install WSDD for Windows network discovery
+  ansible.builtin.apt:
+    name: wsdd
+    state: present
+  when: samba_enable_wsdd | default(false)
+
+- name: Enable and start WSDD service
+  ansible.builtin.service:
+    name: wsdd
+    enabled: true
+    state: started
+  when: samba_enable_wsdd | default(false)
+
+- name: Create Samba share directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode | default('0755') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+  loop: "{{ samba_shares | default([]) }}"
+  when: item.path is defined

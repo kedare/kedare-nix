@@ -1,0 +1,56 @@
+---
+- name: Install Terraform
+  block:
+    - name: Add HashiCorp repository key
+      ansible.builtin.get_url:
+        url: https://apt.releases.hashicorp.com/gpg
+        dest: /usr/share/keyrings/hashicorp-keyring.asc
+        mode: "0644"
+
+    - name: Add HashiCorp repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/hashicorp-keyring.asc] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+        filename: hashicorp
+        state: present
+
+    - name: Install Terraform
+      ansible.builtin.apt:
+        name: terraform
+        state: present
+        update_cache: true
+
+- name: Install go-task
+  ansible.builtin.get_url:
+    url: https://taskfile.dev/install.sh
+    dest: /tmp/install-task.sh
+    mode: "0755"
+
+- name: Run go-task installer
+  ansible.builtin.shell: sh /tmp/install-task.sh -d -b /usr/local/bin
+  args:
+    creates: /usr/local/bin/task
+
+- name: Install act (GitHub Actions local runner)
+  block:
+    - name: Download act binary
+      ansible.builtin.get_url:
+        url: https://github.com/nektos/act/releases/latest/download/act_Linux_x86_64.tar.gz
+        dest: /tmp/act.tar.gz
+        mode: "0644"
+
+    - name: Extract act binary
+      ansible.builtin.unarchive:
+        src: /tmp/act.tar.gz
+        dest: /usr/local/bin
+        remote_src: true
+        creates: /usr/local/bin/act
+
+- name: Install LunarVim
+  ansible.builtin.shell: |
+    bash <(curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh) -y
+  args:
+    creates: "/home/{{ main_user }}/.local/bin/lvim"
+  become: true
+  become_user: "{{ main_user }}"
+  environment:
+    HOME: "/home/{{ main_user }}"

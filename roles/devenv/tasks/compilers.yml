@@ -1,0 +1,28 @@
+---
+- name: Install build essential packages
+  ansible.builtin.apt:
+    name:
+      - build-essential
+      - cmake
+      - autoconf
+      - automake
+      - libtool
+      - pkg-config
+    state: present
+
+- name: Install C/C++ compilers and tools
+  ansible.builtin.apt:
+    name:
+      - gcc
+      - g++
+      - clang
+      - llvm
+      - gdb
+      - valgrind
+    state: present
+
+- name: Install YAML development libraries
+  ansible.builtin.apt:
+    name:
+      - libyaml-dev
+    state: present

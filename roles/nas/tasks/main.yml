@@ -1,0 +1,29 @@
+---
+- name: Import ZFS configuration tasks
+  ansible.builtin.import_tasks: zfs.yml
+  tags: [nas, zfs]
+  when: storage_type == 'zfs'
+
+- name: Import Samba configuration tasks
+  ansible.builtin.import_tasks: samba.yml
+  tags: [nas, samba]
+  when: samba_enabled | default(false)
+
+- name: Import Avahi configuration tasks
+  ansible.builtin.import_tasks: avahi.yml
+  tags: [nas, avahi]
+  when: avahi_enabled | default(false)
+
+- name: Import Kopia backup configuration tasks
+  ansible.builtin.import_tasks: kopia.yml
+  tags: [nas, kopia]
+  when: kopia_enabled | default(false)
+
+- name: Configure NAS-specific firewall rules
+  community.general.ufw:
+    rule: allow
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment }}"
+  loop: "{{ nas_firewall_rules | default([]) }}"
+  when: ufw_enabled | default(true)

@@ -1,0 +1,50 @@
+---
+# Ansible Galaxy roles and collections
+collections:
+  - name: community.general
+    version: ">=8.0.0"
+  - name: community.docker
+    version: ">=3.0.0"
+  - name: ansible.posix
+    version: ">=1.5.0"
+
+roles:
+  # Tailscale VPN
+  - name: artis3n.tailscale
+    version: "4.2.0"
+
+  # Docker
+  - name: geerlingguy.docker
+    version: "7.4.1"
+
+  # Nginx
+  - name: geerlingguy.nginx
+    version: "3.2.0"
+
+  # Certbot for Let's Encrypt
+  - name: geerlingguy.certbot
+    version: "5.1.0"
+
+  # PostgreSQL
+  - name: geerlingguy.postgresql
+    version: "3.5.0"
+
+  # Samba
+  - name: bertvv.samba
+    version: "4.3.0"
+
+  # NFS Server
+  - name: geerlingguy.nfs
+    version: "2.1.2"
+
+  # Firewall (UFW)
+  - name: weareinteractive.ufw
+    version: "2.1.0"
+
+  # Fail2ban
+  - name: robertdebock.fail2ban
+    version: "6.8.0"
+
+  # SSH Hardening
+  - name: devsec.hardening
+    version: "8.8.0"

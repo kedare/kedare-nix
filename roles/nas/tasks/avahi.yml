@@ -1,0 +1,13 @@
+---
+- name: Install Avahi daemon
+  ansible.builtin.apt:
+    name:
+      - avahi-daemon
+      - avahi-utils
+    state: present
+
+- name: Enable and start Avahi daemon
+  ansible.builtin.service:
+    name: avahi-daemon
+    enabled: true
+    state: started

@@ -1,0 +1,67 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+- name: Generate locales
+  community.general.locale_gen:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - "{{ locale }}"
+    - "{{ additional_locales | default([]) }}"
+  when: item is defined
+
+- name: Set default locale
+  ansible.builtin.lineinfile:
+    path: /etc/default/locale
+    regexp: "^LANG="
+    line: "LANG={{ locale }}"
+    create: true
+    mode: "0644"
+
+- name: Enable Universe and Multiverse repositories
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+    state: present
+  loop:
+    - "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} universe"
+    - "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} multiverse"
+
+- name: Install base system packages
+  ansible.builtin.apt:
+    name:
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - ubuntu-keyring
+    state: present
+
+- name: Configure unattended-upgrades
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+
+- name: Configure apt to auto-remove unused packages
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/99autoremove
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      APT::Periodic::AutocleanInterval "7";
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+    mode: "0644"
+  when: apt_autoremove_enabled | default(true)
+
+- name: Install and enable fwupd for firmware updates
+  ansible.builtin.apt:
+    name: fwupd
+    state: present

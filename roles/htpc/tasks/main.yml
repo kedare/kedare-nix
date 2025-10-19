@@ -1,0 +1,26 @@
+---
+- name: Add Kodi PPA
+  ansible.builtin.apt_repository:
+    repo: ppa:team-xbmc/ppa
+    state: present
+
+- name: Install Kodi
+  ansible.builtin.apt:
+    name:
+      - kodi
+      - kodi-inputstream-adaptive
+      - kodi-inputstream-rtmp
+    state: present
+    update_cache: true
+
+- name: Configure GDM for auto-login
+  ansible.builtin.lineinfile:
+    path: /etc/gdm3/custom.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: "^#?AutomaticLoginEnable =", line: "AutomaticLoginEnable = true" }
+    - { regexp: "^#?AutomaticLogin =", line: "AutomaticLogin = {{ main_user }}" }
+  notify: Restart GDM
+  when: kodi_auto_login | default(false)

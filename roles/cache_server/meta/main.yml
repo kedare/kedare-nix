@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: kedare
+  description: Generic cache server with Nginx
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble  # 24.04
+
+dependencies:
+  - role: geerlingguy.nginx
+    vars:
+      nginx_remove_default_vhost: "{{ nginx_remove_default_vhost | default(true) }}"
+      nginx_vhosts: "{{ nginx_vhosts | default([]) }}"
+
+  - role: geerlingguy.certbot
+    vars:
+      certbot_admin_email: "{{ certbot_admin_email | default('admin@example.com') }}"
+      certbot_create_if_missing: "{{ certbot_create_if_missing | default(true) }}"
+      certbot_create_method: "{{ certbot_create_method | default('standalone') }}"
+      certbot_certs: "{{ certbot_certs | default([]) }}"
+    when: certbot_enabled | default(false)

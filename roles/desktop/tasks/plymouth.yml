@@ -1,0 +1,20 @@
+---
+- name: Install Plymouth boot splash
+  ansible.builtin.apt:
+    name:
+      - plymouth
+      - plymouth-themes
+    state: present
+
+- name: Configure GRUB for quiet boot with Plymouth
+  ansible.builtin.lineinfile:
+    path: /etc/default/grub
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"'
+    state: present
+  notify: Update GRUB
+
+- name: Enable Plymouth
+  ansible.builtin.systemd:
+    name: plymouth-start
+    enabled: true

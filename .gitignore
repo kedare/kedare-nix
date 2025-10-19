@@ -1,2 +1,41 @@
 result
 result-*
+
+# Ansible
+*.retry
+.vault_pass
+/collections/
+/roles/external/
+
+# Ansible facts cache
+/tmp/ansible_facts/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+/tmp/

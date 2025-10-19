@@ -1,0 +1,46 @@
+---
+- name: Ensure main user group exists
+  ansible.builtin.group:
+    name: "{{ main_user }}"
+    gid: "{{ main_user_gid }}"
+    state: present
+
+- name: Create main user
+  ansible.builtin.user:
+    name: "{{ main_user }}"
+    uid: "{{ main_user_uid }}"
+    group: "{{ main_user }}"
+    groups: "{{ main_user_groups }}"
+    shell: "{{ main_user_shell }}"
+    create_home: true
+    state: present
+
+- name: Ensure .ssh directory exists
+  ansible.builtin.file:
+    path: "/home/{{ main_user }}/.ssh"
+    state: directory
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: "0700"
+
+- name: Fetch SSH keys from Codeberg
+  ansible.builtin.uri:
+    url: "{{ ssh_keys_url }}"
+    return_content: true
+  register: ssh_keys_content
+  when: ssh_keys_url is defined
+
+- name: Add SSH keys to authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ main_user }}"
+    key: "{{ ssh_keys_content.content }}"
+    state: present
+  when: ssh_keys_content is defined and ssh_keys_content.content is defined
+
+- name: Add user to sudoers with NOPASSWD
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/{{ main_user }}
+    line: "{{ main_user }} ALL=(ALL) NOPASSWD: ALL"
+    create: true
+    mode: "0440"
+    validate: "visudo -cf %s"

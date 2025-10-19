@@ -1,0 +1,38 @@
+---
+# garuda - Framework 13 AMD Laptop
+
+ansible_host: garuda.tailnet
+
+# Storage configuration
+storage_type: luks_xfs
+luks_device: /dev/nvme0n1p2
+luks_uuid: "aad1e5c7-af2b-4d88-b50d-8986c6dc3092"
+luks_name: cryptoroot
+filesystem: xfs
+root_mount: /
+
+# Kernel modules
+kernel_modules:
+  - nvme
+  - xhci_pci
+  - thunderbolt
+  - usb_storage
+  - sd_mod
+  - dm-snapshot
+
+# GPU configuration
+gpu_vendor: amd
+gpu_driver: amdvlk
+gpu_32bit_support: true
+
+# Framework-specific optimizations
+is_framework_laptop: true
+framework_model: "13-7040-amd"
+
+# Enabled roles
+enabled_roles:
+  - common
+  - desktop
+  - devenv
+  - gaming
+  - gpu_amd

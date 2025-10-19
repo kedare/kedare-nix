@@ -1,0 +1,51 @@
+# Path to oh-my-zsh installation
+export ZSH="$HOME/.oh-my-zsh"
+
+# Plugins
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  direnv
+  docker
+  kubectl
+  terraform
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# Starship prompt
+eval "$(starship init zsh)"
+
+# Aliases from NixOS config
+alias gco='git checkout'
+alias gps='git push'
+alias gpl='git pull'
+alias gs='git status'
+alias gd='git diff'
+alias ga='git add'
+alias gc='git commit'
+alias gl='git log'
+alias k='kubectl'
+alias tf='terraform'
+
+# Use bat instead of cat if available
+if command -v bat &> /dev/null; then
+  alias cat='bat'
+fi
+
+# Use eza instead of ls if available
+if command -v eza &> /dev/null; then
+  alias ls='eza'
+  alias ll='eza -l'
+  alias la='eza -la'
+fi
+
+# Editor preferences
+export EDITOR=nvim
+export VISUAL=nvim
+
+# Add cargo bin to PATH if it exists
+if [ -d "$HOME/.cargo/bin" ]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi

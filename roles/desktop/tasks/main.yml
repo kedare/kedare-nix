@@ -1,0 +1,36 @@
+---
+- name: Import GNOME installation tasks
+  ansible.builtin.import_tasks: gnome.yml
+  tags: [desktop, gnome]
+
+- name: Import audio configuration tasks
+  ansible.builtin.import_tasks: audio.yml
+  tags: [desktop, audio]
+
+- name: Import printing configuration tasks
+  ansible.builtin.import_tasks: printing.yml
+  tags: [desktop, printing]
+  when: enable_printing | default(true)
+
+- name: Import bluetooth configuration tasks
+  ansible.builtin.import_tasks: bluetooth.yml
+  tags: [desktop, bluetooth]
+  when: enable_bluetooth | default(true)
+
+- name: Import fingerprint configuration tasks
+  ansible.builtin.import_tasks: fingerprint.yml
+  tags: [desktop, fingerprint]
+  when: enable_fingerprint | default(false)
+
+- name: Import applications installation tasks
+  ansible.builtin.import_tasks: applications.yml
+  tags: [desktop, applications]
+
+- name: Import fonts installation tasks
+  ansible.builtin.import_tasks: fonts.yml
+  tags: [desktop, fonts]
+
+- name: Import plymouth configuration tasks
+  ansible.builtin.import_tasks: plymouth.yml
+  tags: [desktop, plymouth]
+  when: enable_plymouth | default(false)

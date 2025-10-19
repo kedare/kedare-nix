@@ -1,0 +1,40 @@
+---
+- name: Stop and disable NetworkManager
+  ansible.builtin.service:
+    name: NetworkManager
+    state: stopped
+    enabled: false
+  when: use_systemd_networkd | default(false)
+
+- name: Enable and start systemd-networkd
+  ansible.builtin.service:
+    name: systemd-networkd
+    enabled: true
+    state: started
+  when: use_systemd_networkd | default(false)
+
+- name: Enable and start systemd-resolved
+  ansible.builtin.service:
+    name: systemd-resolved
+    enabled: true
+    state: started
+  when: use_systemd_networkd | default(false)
+
+- name: Configure systemd-networkd to use DHCP on all interfaces
+  ansible.builtin.copy:
+    dest: /etc/systemd/network/20-wired.network
+    content: |
+      [Match]
+      Name=en* eth*
+
+      [Network]
+      DHCP=yes
+    mode: "0644"
+  notify: Restart systemd-networkd
+  when: use_systemd_networkd | default(false)
+
+- name: Install server-specific packages
+  ansible.builtin.apt:
+    name: "{{ server_packages }}"
+    state: present
+  when: server_packages is defined

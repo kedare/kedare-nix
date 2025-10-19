@@ -1,0 +1,38 @@
+---
+# carbuncle - HTPC with Intel GPU
+
+ansible_host: carbuncle.tailnet
+
+# Storage configuration
+storage_type: luks_xfs
+luks_device: /dev/sda2
+luks_uuid: "cb377952-64ba-41b3-81a6-fdb810ea5b55"
+luks_name: cryptoroot
+filesystem: xfs
+root_mount: /
+
+# Kernel modules
+kernel_modules:
+  - xhci_pci
+  - ehci_pci
+  - ahci
+  - usb_storage
+  - usbhid
+  - sd_mod
+  - dm-snapshot
+
+# GPU configuration
+gpu_vendor: intel
+enable_vaapi: true
+enable_intel_media: true
+
+# HTPC configuration
+enable_kodi: true
+kodi_auto_login: true
+
+# Enabled roles
+enabled_roles:
+  - common
+  - desktop
+  - gpu_intel
+  - htpc

@@ -1,0 +1,55 @@
+---
+- name: Install common packages
+  ansible.builtin.apt:
+    name: "{{ common_packages }}"
+    state: present
+
+- name: Install snap packages
+  community.general.snap:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ external_packages | selectattr('method', 'equalto', 'snap') | list }}"
+  when: external_packages is defined
+
+- name: Create temporary directory for external packages
+  ansible.builtin.tempfile:
+    state: directory
+  register: temp_packages_dir
+  when: external_packages is defined
+
+- name: Download and install .deb packages
+  block:
+    - name: Download .deb packages
+      ansible.builtin.get_url:
+        url: "{{ item.url }}"
+        dest: "{{ temp_packages_dir.path }}/{{ item.name }}.deb"
+        mode: "0644"
+      loop: "{{ external_packages | selectattr('method', 'equalto', 'deb') | list }}"
+      when: item.url is defined
+
+    - name: Install .deb packages
+      ansible.builtin.apt:
+        deb: "{{ temp_packages_dir.path }}/{{ item.name }}.deb"
+        state: present
+      loop: "{{ external_packages | selectattr('method', 'equalto', 'deb') | list }}"
+  when: external_packages is defined and (external_packages | selectattr('method', 'equalto', 'deb') | list | length > 0)
+
+- name: Install Rust and cargo (for cargo packages)
+  ansible.builtin.shell: |
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  args:
+    creates: /home/{{ main_user }}/.cargo/bin/cargo
+  become: true
+  become_user: "{{ main_user }}"
+  when: external_packages is defined and (external_packages | selectattr('method', 'equalto', 'cargo') | list | length > 0)
+
+- name: Install packages via cargo
+  community.general.cargo:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ external_packages | selectattr('method', 'equalto', 'cargo') | list }}"
+  become: true
+  become_user: "{{ main_user }}"
+  environment:
+    PATH: "/home/{{ main_user }}/.cargo/bin:{{ ansible_env.PATH }}"
+  when: external_packages is defined

@@ -1,0 +1,19 @@
+---
+# Test playbook - For testing individual roles
+- name: Test playbook
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Ping test
+      ansible.builtin.ping:
+
+    - name: Display system information
+      ansible.builtin.debug:
+        msg: |
+          Hostname: {{ inventory_hostname }}
+          Distribution: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Kernel: {{ ansible_kernel }}
+          Architecture: {{ ansible_architecture }}
+          Groups: {{ group_names }}

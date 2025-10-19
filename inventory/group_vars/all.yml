@@ -1,0 +1,115 @@
+---
+# Global variables for all hosts
+
+# System configuration
+timezone: Europe/Madrid
+locale: en_US.UTF-8
+additional_locales:
+  - fr_FR.UTF-8
+  - es_ES.UTF-8
+
+# Main user configuration
+main_user: kedare
+main_user_uid: 1000
+main_user_gid: 1000
+main_user_shell: /usr/bin/zsh
+main_user_groups:
+  - wheel
+  - sudo
+  - networkmanager
+
+# SSH keys (fetched from Codeberg)
+ssh_keys_url: https://codeberg.org/kedare.keys
+ssh_keys_sha256: "expected-sha256-hash-here"  # TODO: Update with actual hash
+
+# Tailscale VPN configuration
+tailscale_authkey: ""  # Set via environment variable or vault
+tailscale_args: "--accept-routes"
+
+# Firewall configuration (UFW)
+ufw_enabled: true
+ufw_default_incoming_policy: deny
+ufw_default_outgoing_policy: allow
+ufw_whitelisted_subnets:
+  - 192.168.88.0/22
+  - 2001:67c:da8:1000::/60
+
+# Fail2ban configuration
+fail2ban_enabled: true
+fail2ban_maxretry: 10
+fail2ban_bantime: 3600
+fail2ban_findtime: 600
+
+# SSH configuration (used by devsec.hardening.ssh_hardening role)
+ssh_port: 22
+ssh_permit_root_login: "no"
+ssh_password_authentication: "no"
+ssh_x11_forwarding: "no"
+ssh_max_auth_tries: 3
+ssh_allow_agent_forwarding: true  # Useful for development machines
+
+# System packages (common CLI tools)
+common_packages:
+  # Modern CLI replacements
+  - bat
+  - fd-find
+  - ripgrep
+  - fzf
+  - jq
+  # File utilities
+  - tree
+  - ncdu
+  - rsync
+  # Network utilities
+  - wget
+  - curl
+  - httpie
+  - dnsutils
+  - tcpdump
+  - mtr
+  - net-tools
+  # Monitoring
+  - htop
+  - btop
+  - iotop
+  - sysstat
+  - lm-sensors
+  # Archiving
+  - zip
+  - unzip
+  - p7zip-full
+  - xz-utils
+  - zstd
+  # Development
+  - git
+  - vim
+  - neovim
+  - direnv
+  # Backup
+  - rclone
+  # Security
+  - gnupg
+  - gnupg-agent
+  # Build essentials
+  - build-essential
+  - pkg-config
+
+# Packages requiring external repositories/installation
+external_packages:
+  - name: eza
+    method: cargo  # or download binary
+  - name: yq
+    method: snap
+  - name: tokei
+    method: cargo
+  - name: kopia
+    method: deb
+    url: https://github.com/kopia/kopia/releases/latest
+
+# Nix garbage collection equivalent - apt autoremove schedule
+apt_autoremove_enabled: true
+apt_autoremove_schedule: weekly
+
+# Netdata monitoring
+netdata_enabled: true
+netdata_port: 19999

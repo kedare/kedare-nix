@@ -1,0 +1,61 @@
+---
+- name: Download Kopia .deb package
+  ansible.builtin.get_url:
+    url: https://github.com/kopia/kopia/releases/latest/download/kopia_amd64.deb
+    dest: /tmp/kopia.deb
+    mode: "0644"
+
+- name: Install Kopia
+  ansible.builtin.apt:
+    deb: /tmp/kopia.deb
+    state: present
+
+- name: Create Kopia repository directory
+  ansible.builtin.file:
+    path: "{{ kopia_repository }}"
+    state: directory
+    mode: "0700"
+    owner: root
+    group: root
+  when: kopia_repository is defined
+
+- name: Create Kopia backup systemd service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/kopia-snapshot.service
+    content: |
+      [Unit]
+      Description=Kopia Snapshot Service
+      After=network.target
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/kopia snapshot create {{ zfs_mount_point | default('/mnt/dpool') }}
+      User=root
+
+      [Install]
+      WantedBy=multi-user.target
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Create Kopia backup systemd timer
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/kopia-snapshot.timer
+    content: |
+      [Unit]
+      Description=Daily Kopia Snapshot Timer
+
+      [Timer]
+      OnCalendar=daily
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Enable Kopia snapshot timer
+  ansible.builtin.systemd:
+    name: kopia-snapshot.timer
+    enabled: true
+    state: started
+    daemon_reload: true

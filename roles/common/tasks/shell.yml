@@ -1,0 +1,43 @@
+---
+- name: Install zsh
+  ansible.builtin.apt:
+    name: zsh
+    state: present
+
+- name: Install oh-my-zsh for main user
+  ansible.builtin.shell: |
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  args:
+    creates: "/home/{{ main_user }}/.oh-my-zsh"
+  become: true
+  become_user: "{{ main_user }}"
+
+- name: Install zsh-autosuggestions
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: "/home/{{ main_user }}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+    version: master
+  become: true
+  become_user: "{{ main_user }}"
+
+- name: Install zsh-syntax-highlighting
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting
+    dest: "/home/{{ main_user }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    version: master
+  become: true
+  become_user: "{{ main_user }}"
+
+- name: Install Starship prompt
+  ansible.builtin.shell: |
+    curl -sS https://starship.rs/install.sh | sh -s -- -y
+  args:
+    creates: /usr/local/bin/starship
+
+- name: Configure .zshrc
+  ansible.builtin.template:
+    src: zshrc.j2
+    dest: "/home/{{ main_user }}/.zshrc"
+    owner: "{{ main_user }}"
+    group: "{{ main_user }}"
+    mode: "0644"

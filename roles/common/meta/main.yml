@@ -1,0 +1,80 @@
+---
+galaxy_info:
+  author: kedare
+  description: Common base system configuration for all hosts
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble  # 24.04
+
+dependencies:
+  - role: artis3n.tailscale
+    vars:
+      tailscale_authkey: "{{ tailscale_authkey | default('') }}"
+      tailscale_args: "{{ tailscale_args | default('--accept-routes') }}"
+    when: tailscale_authkey | default('') != ''
+
+  - role: weareinteractive.ufw
+    vars:
+      ufw_enabled: "{{ ufw_enabled | default(true) }}"
+      ufw_default_incoming_policy: "{{ ufw_default_incoming_policy | default('deny') }}"
+      ufw_default_outgoing_policy: "{{ ufw_default_outgoing_policy | default('allow') }}"
+      ufw_rules:
+        # Allow SSH
+        - rule: allow
+          port: "{{ ssh_port | default(22) }}"
+          proto: tcp
+        # Allow ping
+        - rule: allow
+          name: "ICMP"
+        # Allow from whitelisted subnets
+        - rule: allow
+          from_ip: "192.168.88.0/22"
+        - rule: allow
+          from_ip: "2001:67c:da8:1000::/60"
+
+  - role: robertdebock.fail2ban
+    vars:
+      fail2ban_jails:
+        - name: sshd
+          enabled: true
+          port: ssh
+          filter: sshd
+          logpath: /var/log/auth.log
+          maxretry: "{{ fail2ban_maxretry | default(10) }}"
+          bantime: "{{ fail2ban_bantime | default(3600) }}"
+          findtime: "{{ fail2ban_findtime | default(600) }}"
+    when: fail2ban_enabled | default(true)
+
+  - role: devsec.hardening.ssh_hardening
+    vars:
+      # Allow SSH keys from our main user
+      ssh_allow_users: "{{ main_user }}"
+      # Keep some usability while hardening
+      ssh_client_alive_interval: 300
+      ssh_client_alive_count_max: 3
+      # Allow agent forwarding (useful for development)
+      ssh_allow_agent_forwarding: "{{ ssh_allow_agent_forwarding | default(true) }}"
+      # Use strong ciphers and algorithms
+      ssh_hardening_enabled: true
+      # Use custom port if specified
+      ssh_server_ports: ["{{ ssh_port | default(22) }}"]
+      # Allow password authentication to be disabled
+      ssh_password_authentication: false
+      # Disable root login
+      ssh_permit_root_login: false
+      # Enable public key authentication
+      ssh_permit_tunnel: false
+      # Disable X11 forwarding by default
+      ssh_x11_forwarding: "{{ ssh_x11_forwarding | default(false) }}"
+      # Maximum authentication attempts
+      ssh_max_auth_retries: "{{ ssh_max_auth_tries | default(3) }}"
+      # Use PAM
+      ssh_use_pam: true
+      # Print last log
+      ssh_print_last_log: true
+      # SFTP configuration
+      sftp_enabled: true
+      sftp_chroot: false

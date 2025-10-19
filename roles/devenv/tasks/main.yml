@@ -1,0 +1,16 @@
+---
+- name: Import compiler installation tasks
+  ansible.builtin.import_tasks: compilers.yml
+  tags: [devenv, compilers]
+
+- name: Import language runtime installation tasks
+  ansible.builtin.import_tasks: languages.yml
+  tags: [devenv, languages]
+
+- name: Import virtualization configuration tasks
+  ansible.builtin.import_tasks: virtualization.yml
+  tags: [devenv, virtualization]
+
+- name: Import tools installation tasks
+  ansible.builtin.import_tasks: tools.yml
+  tags: [devenv, tools]

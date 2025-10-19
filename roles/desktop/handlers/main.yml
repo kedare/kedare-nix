@@ -1,0 +1,14 @@
+---
+- name: Restart GDM
+  ansible.builtin.service:
+    name: gdm
+    state: restarted
+
+- name: Restart Bluetooth
+  ansible.builtin.service:
+    name: bluetooth
+    state: restarted
+
+- name: Update GRUB
+  ansible.builtin.command: update-grub
+  changed_when: true
