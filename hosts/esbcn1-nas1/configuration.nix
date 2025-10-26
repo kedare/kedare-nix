@@ -42,6 +42,10 @@
         "security" = "user";
         "guest account" = "nobody";
         "map to guest" = "bad user";
+        "case sensitive" = "true";
+        "default case" = "lower";
+        "preserve case" = "true";
+        "short preserve case" = "true";
       };
       "public" = {
         "path" = "/mnt/dpool/public";
