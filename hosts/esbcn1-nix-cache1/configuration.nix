@@ -17,23 +17,6 @@
     443
   ];
 
-  #services.nix-serve = {
-  #  enable = true;
-  #  package = pkgs.nix-serve-ng;
-  #  secretKeyFile = "/var/nix/cache/cache-priv-key.pem";
-  #};
-
-  #services.caddy = {
-  #  enable = true;
-  #  virtualHosts = {
-  #    "cache.nix.keda.re" = {
-  #      extraConfig = ''
-  #        reverse_proxy http://${config.services.nix-serve.bindAddress}:${toString config.services.nix-serve.port}
-  #      '';
-  #    };
-  #  };
-  #};
-
   security.acme = {
     acceptTerms = true;
     email = "acme@kedare.net";
