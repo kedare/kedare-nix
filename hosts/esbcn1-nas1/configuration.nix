@@ -19,11 +19,11 @@
   networking.hostId = "60bd0ba4";
   time.timeZone = "Europe/Madrid";
 
-  fileSystems."/mnt/dpool" = {
-    device = "dpool";
-    fsType = "zfs";
-    options = [ "zfsutil" ];
-  };
+#  fileSystems."/mnt/dpool" = {
+#    device = "dpool";
+#    fsType = "zfs";
+#    options = [ "zfsutil" ];
+#  };
 
   services.avahi = {
     enable = true;
